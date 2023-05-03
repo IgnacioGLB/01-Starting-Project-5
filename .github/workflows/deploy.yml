@@ -11,17 +11,20 @@ jobs:
   test:
     environment: testing
     runs-on: ubuntu-latest # solo hostea la imagen del container. el job va a correr en el node:16 que levante la imagen
-    container:
-      image: node:16
+    #container:  # CON ESTO COMENTADO EL SERVICE YA NO CORRE EN ESTE CONTAINER, sino que corre en el runner, por lo que hay que modificar el cluster addres y abrir el puerto en el service y mapearlo
+      #image: node:16
     env:
       MONGODB_CONNECTION_PROTOCOL: mongodb
-      MONGODB_CLUSTER_ADDRESS: mongodb # this label is the name of the service (easy networking since they are running in the same container)
+      #MONGODB_CLUSTER_ADDRESS: mongodb # this label is the name of the service (easy networking since they are running in the same container)
+      MONGODB_CLUSTER_ADDRESS: 127.0.0.1:27017 # aca no funciona la label, hay que poner la direccion de home
       MONGODB_USERNAME: root
       MONGODB_PASSWORD: example
       PORT: 8080
     services: # services always run in containers, not on the runner. you always need to specify the image (mongo)
       mongodb:
         image: mongo
+        ports: # abro y mapeo el puerto porque ya no esta en un container el service sino en el runner
+          - 27017:27017
         env:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
